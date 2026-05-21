@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#11100e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Orthodox Prayer">
+  <meta name="description" content="Orthodox Daily Prayer and Devotional PWA for May 21 through December 31, 2026.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192">
+  <link rel="stylesheet" href="styles.css">
+  <title>Orthodox Daily Prayer 2026</title>
+</head>
+<body data-theme="monastic">
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-top">
+        <div>
+          <p class="eyebrow">Orthodox Daily Prayer</p>
+          <h1>Daily Rule & Devotional</h1>
+          <p class="subhead">May 21, 2026 through December 31, 2026</p>
+        </div>
+        <button id="installHintBtn" class="ghost-btn" type="button" aria-label="Show install help">Install</button>
+      </div>
+
+      <section class="date-card" aria-label="Date controls">
+        <button id="prevDay" class="nav-btn" type="button" aria-label="Previous day">‹</button>
+        <div class="date-center">
+          <label for="dateInput">Prayer date</label>
+          <input id="dateInput" type="date" min="2026-05-21" max="2026-12-31" value="2026-05-21">
+          <button id="todayBtn" class="text-btn" type="button">Use today if in range</button>
+        </div>
+        <button id="nextDay" class="nav-btn" type="button" aria-label="Next day">›</button>
+      </section>
+
+      <div class="status-grid" aria-live="polite">
+        <div class="status-pill"><span>Season</span><strong id="seasonLabel">Loading</strong></div>
+        <div class="status-pill"><span>Theme</span><strong id="themeLabel">Monastic</strong></div>
+        <div class="status-pill"><span>Fast</span><strong id="fastLabel">Checking</strong></div>
+        <div class="status-pill"><span>Rule streak</span><strong id="streakLabel">0 days</strong></div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="App sections">
+      <button class="tab active" type="button" data-panel="todayPanel">Today</button>
+      <button class="tab" type="button" data-panel="morningPanel">Morning</button>
+      <button class="tab" type="button" data-panel="eveningPanel">Evening</button>
+      <button class="tab" type="button" data-panel="diptychesPanel">Diptyches</button>
+      <button class="tab" type="button" data-panel="settingsPanel">Settings</button>
+    </nav>
+
+    <main>
+      <section id="todayPanel" class="panel active" aria-labelledby="todayTitle">
+        <div class="card day-summary">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Liturgical day</p>
+              <h2 id="todayTitle">Thursday, May 21, 2026</h2>
+            </div>
+            <span id="apiStatus" class="source-chip">Local engine</span>
+          </div>
+          <p id="localFeast" class="feast-line"></p>
+          <p id="seasonNote" class="muted"></p>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Feasts and commemorations</p>
+              <h2>Calendar data</h2>
+            </div>
+            <button id="refreshReadings" class="ghost-btn small" type="button">Refresh</button>
+          </div>
+          <div id="calendarOutput" class="prose loading-block">Loading verified calendar data when online. Built-in seasonal data remains available offline.</div>
+        </div>
+
+        <div class="card">
+          <p class="eyebrow">Scripture</p>
+          <h2>Epistle and Gospel references</h2>
+          <div id="readingsOutput" class="reading-list loading-block">Loading readings.</div>
+          <p class="micro-note">Scripture text is intentionally shown as references first. Full online readings can be synced and cached when the source permits browser access.</p>
+        </div>
+
+        <div class="card hymn-card">
+          <p class="eyebrow">Seasonal hymn</p>
+          <h2 id="hymnTitle">Troparion</h2>
+          <p id="troparionText" class="hymn-text"></p>
+        </div>
+
+        <div class="card reflection-card">
+          <p class="eyebrow">Patristic reflection</p>
+          <h2 id="fatherTitle">Reflection</h2>
+          <p id="fatherText" class="prose"></p>
+          <p id="fatherSource" class="micro-note"></p>
+        </div>
+
+        <div class="card tracker-card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Daily rule tracker</p>
+              <h2>Mark today’s prayer rule</h2>
+            </div>
+            <button id="clearDayBtn" class="ghost-btn small" type="button">Clear day</button>
+          </div>
+          <div class="check-row">
+            <label><input id="morningDone" type="checkbox"> Morning rule completed</label>
+            <label><input id="eveningDone" type="checkbox"> Evening rule completed</label>
+          </div>
+          <label class="note-label" for="dailyNote">Private note</label>
+          <textarea id="dailyNote" rows="3" placeholder="A word, intention, or observation for this date."></textarea>
+        </div>
+      </section>
+
+      <section id="morningPanel" class="panel" aria-labelledby="morningTitle">
+        <div class="card reading-mode-card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Morning prayer</p>
+              <h2 id="morningTitle">Morning Rule</h2>
+            </div>
+            <button class="mark-rule ghost-btn small" data-rule="morning" type="button">Mark complete</button>
+          </div>
+          <div id="morningRule" class="prayer-text"></div>
+        </div>
+      </section>
+
+      <section id="eveningPanel" class="panel" aria-labelledby="eveningTitle">
+        <div class="card reading-mode-card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Evening prayer</p>
+              <h2 id="eveningTitle">Evening Rule</h2>
+            </div>
+            <button class="mark-rule ghost-btn small" data-rule="evening" type="button">Mark complete</button>
+          </div>
+          <div id="eveningRule" class="prayer-text"></div>
+        </div>
+      </section>
+
+      <section id="diptychesPanel" class="panel" aria-labelledby="diptychesTitle">
+        <div class="card">
+          <p class="eyebrow">Prayer journal</p>
+          <h2 id="diptychesTitle">Diptyches</h2>
+          <p class="muted">These names are stored only in this browser on this device.</p>
+          <div class="diptych-grid">
+            <label>Living
+              <textarea id="livingNames" rows="10" placeholder="Names of the living, one per line"></textarea>
+            </label>
+            <label>Departed
+              <textarea id="departedNames" rows="10" placeholder="Names of the departed, one per line"></textarea>
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="saveDiptyches" class="primary-btn" type="button">Save diptyches</button>
+            <button id="insertDiptyches" class="ghost-btn" type="button">Show in prayers</button>
+          </div>
+          <div id="diptychPreview" class="prose diptych-preview"></div>
+        </div>
+      </section>
+
+      <section id="settingsPanel" class="panel" aria-labelledby="settingsTitle">
+        <div class="card">
+          <p class="eyebrow">Configuration</p>
+          <h2 id="settingsTitle">Settings</h2>
+          <div class="settings-grid">
+            <label>Fixed-feast calendar
+              <select id="calendarMode">
+                <option value="julian">Old Calendar, Julian fixed feasts</option>
+                <option value="gregorian">New/Revised Julian fixed feasts</option>
+              </select>
+            </label>
+            <label>Reading font
+              <select id="fontMode">
+                <option value="serif">Monastic serif</option>
+                <option value="sans">Modern crisp</option>
+              </select>
+            </label>
+            <label>Font size
+              <input id="fontSize" type="range" min="16" max="26" step="1">
+            </label>
+            <label class="switch-line"><input id="parchmentMode" type="checkbox"> Illuminated parchment reading mode</label>
+            <label class="switch-line"><input id="lowLightMode" type="checkbox"> Low-light chapel mode</label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Offline cache</p>
+              <h2>Sync verified daily calendar data</h2>
+            </div>
+            <span id="cacheCount" class="source-chip">0 cached</span>
+          </div>
+          <p class="muted">The app shell works offline after install. Verified daily readings and commemorations are cached per date after lookup. Use the sync button online to cache the remaining 2026 dates.</p>
+          <div class="button-row">
+            <button id="syncAllBtn" class="primary-btn" type="button">Sync May 21 to Dec 31</button>
+            <button id="clearCacheBtn" class="ghost-btn" type="button">Clear cached calendar</button>
+          </div>
+          <progress id="syncProgress" max="225" value="0"></progress>
+          <p id="syncMessage" class="micro-note"></p>
+        </div>
+
+        <div class="card">
+          <p class="eyebrow">Data portability</p>
+          <h2>Export or import your local prayer data</h2>
+          <div class="button-row">
+            <button id="exportDataBtn" class="ghost-btn" type="button">Export JSON</button>
+            <label class="file-label">Import JSON<input id="importDataInput" type="file" accept="application/json"></label>
+          </div>
+          <p class="micro-note">Export includes settings, tracker entries, notes, and diptyches. It does not include synced third-party calendar cache.</p>
+        </div>
+
+        <div class="card install-card" id="installHelp">
+          <p class="eyebrow">iPhone install notes</p>
+          <h2>How to use this on iPhone</h2>
+          <ol>
+            <li>For simple use, open <strong>index.html</strong> in Safari or another browser.</li>
+            <li>For full PWA behavior, place the folder on any HTTPS static host, open it in Safari, tap Share, then Add to Home Screen.</li>
+            <li>Tap <strong>Sync May 21 to Dec 31</strong> while online to cache daily calendar data for offline use.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="prayerSectionTemplate">
+    <section class="prayer-section">
+      <h3></h3>
+      <div></div>
+    </section>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
